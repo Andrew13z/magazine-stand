@@ -17,4 +17,6 @@ public interface MagazineService {
 	MagazineDto updateMagazine(Long id, MagazineDto magazineDto);
 
 	void deleteMagazine(Long id);
+
+	long countAllMagazines();
 }

@@ -60,4 +60,9 @@ public class MagazineServiceImpl implements MagazineService {
 	public void deleteMagazine(Long id) {
 		repository.deleteById(id);
 	}
+
+	@Override
+	public long countAllMagazines() {
+		return repository.count();
+	}
 }

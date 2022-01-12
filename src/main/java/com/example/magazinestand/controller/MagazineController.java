@@ -2,6 +2,8 @@ package com.example.magazinestand.controller;
 
 import com.example.magazinestand.dto.MagazineDto;
 import com.example.magazinestand.service.MagazineService;
+import io.prometheus.client.CollectorRegistry;
+import io.prometheus.client.Histogram;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,15 +22,25 @@ import java.util.List;
 public class MagazineController {
 
 	private final MagazineService service;
+	private final Histogram requestHistogram;
 
 	@Autowired
-	public MagazineController(MagazineService service) {
+	public MagazineController(MagazineService service, CollectorRegistry collectorRegistry) {
 		this.service = service;
+		requestHistogram = Histogram.build()
+				.name("create_reqeust_duration")
+				.help("Time spent prossesing create reqeust.")
+				.register(collectorRegistry);
 	}
 
 	@PostMapping
 	public MagazineDto createMagazine(@RequestBody MagazineDto magazine) {
-		return service.createMagazine(magazine);
+		Histogram.Timer timer = requestHistogram.startTimer();
+
+		var createdMagazine = service.createMagazine(magazine);
+
+		timer.observeDuration();
+		return createdMagazine;
 	}
 
 	@GetMapping("/{id}")
