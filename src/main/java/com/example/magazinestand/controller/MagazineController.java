@@ -5,6 +5,7 @@ import com.example.magazinestand.service.MagazineService;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.Histogram;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -34,6 +36,7 @@ public class MagazineController {
 	}
 
 	@PostMapping
+	@ResponseStatus(HttpStatus.CREATED)
 	public MagazineDto createMagazine(@RequestBody MagazineDto magazine) {
 		Histogram.Timer timer = requestHistogram.startTimer();
 
@@ -48,13 +51,16 @@ public class MagazineController {
 		return service.getMagazine(id);
 	}
 
-	@GetMapping(params = "title")
-	public List<MagazineDto> getMagazine(@RequestParam("title") String title) {
-		return service.getMagazinesByTitle(title);
-	}
+//	@GetMapping(params = "title")
+//	public List<MagazineDto> getMagazine(@RequestParam("title") String title) {
+//
+//	}
 
 	@GetMapping
 	public List<MagazineDto> getAll(@RequestParam(value = "title", required = false) String title) {
+		if (title != null) {
+			return service.getMagazinesByTitle(title);
+		}
 		return service.getAll();
 	}
 
