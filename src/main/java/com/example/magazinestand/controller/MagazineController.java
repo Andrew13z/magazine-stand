@@ -51,11 +51,6 @@ public class MagazineController {
 		return service.getMagazine(id);
 	}
 
-//	@GetMapping(params = "title")
-//	public List<MagazineDto> getMagazine(@RequestParam("title") String title) {
-//
-//	}
-
 	@GetMapping
 	public List<MagazineDto> getAll(@RequestParam(value = "title", required = false) String title) {
 		if (title != null) {

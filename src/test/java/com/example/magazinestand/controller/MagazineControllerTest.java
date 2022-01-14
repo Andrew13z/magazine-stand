@@ -33,13 +33,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Sql(value = {"classpath:drop.sql", "classpath:init.sql"})
 class MagazineControllerTest {
 
-	private static Long ID = 1L;
+	private static final Long ID = 1L;
 	private static final String TITLE = "Reader's Digest";
 	private static final BigDecimal PRICE = BigDecimal.valueOf(3.99);
 	private static final LocalDate DATE_OF_ISSUE = LocalDate.of(2021, 10, 1);
 	private static final String FILE_LOCATION = "/magazines/Reader's-Digest-2021-10-01.pdf";
 	private static final String EXISTING_TITLE = "National Geographic";
-	private static int PREEXISTING_MAGAZINES_COUNT = 5;
+	private static final int PREEXISTING_MAGAZINES_COUNT = 5;
 
 	private MockMvc mockMvc;
 	@MockBean

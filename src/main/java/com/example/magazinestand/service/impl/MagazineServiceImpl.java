@@ -51,8 +51,13 @@ public class MagazineServiceImpl implements MagazineService {
 
 	@Override
 	public MagazineDto updateMagazine(Long id, MagazineDto magazineDto) {
-		magazineDto.setId(id);
-		var updatedMagazine = repository.save(mapper.map(magazineDto, Magazine.class));
+		var oldMagazine = repository.findById(id)
+				.orElseThrow(() -> new EntityNotFoundException("Magazine not found by id: " + id));
+		oldMagazine.setTitle(magazineDto.getTitle());
+		oldMagazine.setDateOfIssue(magazineDto.getDateOfIssue());
+		oldMagazine.setPrice(magazineDto.getPrice());
+		oldMagazine.setFileLocation(magazineDto.getFileLocation());
+		var updatedMagazine = repository.save(oldMagazine);
 		return mapper.map(updatedMagazine, MagazineDto.class);
 	}
 

@@ -4,6 +4,7 @@ import com.example.magazinestand.security.dto.UserDto;
 import com.example.magazinestand.security.entity.UserEntity;
 import com.example.magazinestand.security.enums.Role;
 import com.example.magazinestand.security.exception.AuthenticationException;
+import com.example.magazinestand.security.exception.UserExistsException;
 import com.example.magazinestand.security.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -38,7 +39,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 	public UserDetails createUser(UserDto userDto) {
 		if (userRepository.findById(userDto.getUsername()).isPresent()) {
-			throw new IllegalArgumentException("User already exists with username: " + userDto.getUsername());
+			throw new UserExistsException("User already exists with username: " + userDto.getUsername());
 		}
 		var userEntity = new UserEntity(userDto.getUsername(),
 										passwordEncoder.encode(userDto.getPassword()),

@@ -2,13 +2,16 @@ package com.example.magazinestand.security.controller;
 
 import com.example.magazinestand.security.dto.AuthenticationResponse;
 import com.example.magazinestand.security.dto.UserDto;
+import com.example.magazinestand.security.exception.AuthenticationException;
 import com.example.magazinestand.security.service.CustomUserDetailsService;
 import com.example.magazinestand.security.util.JwtUtil;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.Counter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,13 +40,18 @@ public class AuthenticationController {
 
 	@PostMapping("/login")
 	public AuthenticationResponse createAuthenticationToken(@RequestBody UserDto userDto) {
-		authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(userDto.getUsername(), userDto.getPassword()));
+		try {
+			authenticationManager.authenticate(
+					new UsernamePasswordAuthenticationToken(userDto.getUsername(), userDto.getPassword()));
+		} catch (BadCredentialsException e) {
+			throw new AuthenticationException(e);
+		}
 		var userDetails = userDetailsService.loadUserByUsername(userDto.getUsername());
 		return new AuthenticationResponse(jwtUtil.generateToken(userDetails));
 	}
 
 	@PostMapping("/register")
+	@ExceptionHandler(IllegalArgumentException.class)
 	public AuthenticationResponse registerUserAndCreateAuthenticationToken(@RequestBody UserDto userDto) {
 		var userDetails = userDetailsService.createUser(userDto);
 		counter.inc();
